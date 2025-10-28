@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharti Chandel - Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* --- Global Styles & Color Palette --- */
+        :root {
+            --primary-color: #E89ABE; 
+            --secondary-color: #F7D6E0;
+            --bg-light: #FFFBFB;      
+            --text-dark: #4A4A4A;      
+            --text-light: #FFFFFF;
+            --accent-color: #B28DFF; 
+            --font-heading: 'Great Vibes', cursive;
+            --font-body: 'Montserrat', sans-serif;
+            
+            /* NEW: Light glass color */
+            --light-glass: rgba(255, 251, 251, 0.85); /* Based on --bg-light */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            font-weight: normal;
+            margin-bottom: 20px;
+            overflow-wrap: break-word;
+        }
+
+        h1 { font-size: 6rem; line-height: 1.1; }
+        h2 { font-size: 3.5rem; text-align: center; }
+        p { font-size: 1rem; margin-bottom: 15px; }
+        a { text-decoration: none; color: var(--primary-color); }
+        .section { padding: 80px 0; }
+
+        /* --- Blossom Canvas (The Falling Leaves) --- */
+        #blossom-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ==================================================================
+        == FLOATING PILL NAV (White Glass, Appears on Scroll)
+        ==================================================================
+        */
+        .navbar-floating {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            width: 90%;
+            max-width: 1100px;
+            z-index: 100;
+            
+            /* CHANGED: Starts hidden and moved up */
+            transform: translateX(-50%) translateY(-50px);
+            opacity: 0;
+            pointer-events: none; /* Can't click it when hidden */
+            
+            /* This is the animation for appearing */
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+        }
+
+        /* NEW: This class is added by JavaScript on scroll */
+        .navbar-floating.nav-scrolled {
+            transform: translateX(-50%) translateY(0); /* Moves into place */
+            opacity: 1; /* Fades in */
+            pointer-events: auto; /* Becomes clickable */
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            /* CHANGED: Switched to the light glass effect */
+            background: var(--light-glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            
+            border-radius: 50px;
+            padding: 12px 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .nav-brand {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color); /* Pink logo looks good on white */
+        }
+
+        /* Desktop Navigation Links */
+        .nav-links-desktop {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        .nav-links-desktop a {
+            /* CHANGED: Dark text for the light background */
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+        .nav-links-desktop a:hover {
+            color: var(--primary-color); /* Pink hover */
+        }
+
+        /* Icons + Mobile Toggle */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-icon {
+            /* CHANGED: Dark icons for the light background */
+            color: var(--text-dark);
+            transition: color 0.3s ease;
+        }
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+
+        /* Mobile Hamburger Button */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            /* CHANGED: Dark icon for the light background */
+            color: var(--text-dark);
+            z-index: 1001;
+        }
+        .nav-toggle .feather {
+            width: 30px;
+            height: 30px;
+        }
+        
+        /* Mobile Slide-out Menu (This is still light, which is correct) */
+        .nav-links-mobile {
+            display: flex;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 70%;
+            background: rgba(255, 251, 251, 0.95); /* Light glass */
+            backdrop-filter: blur(10px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            list-style: none;
+            gap: 30px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+            z-index: 99; /* Below the header, but above content */
+        }
+        .nav-links-mobile.nav-active {
+            transform: translateX(0);
+        }
+        .nav-links-mobile a {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        /* ================================================================ */
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-dark);
+            padding: 0 20px;
+        }
+        .hero-content { position: relative; z-index: 2; }
+        .hero-content p { font-size: 1.5rem; font-weight: 300; }
+
+        /* --- About Me Section --- */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        .profile-pic {
+            width: 250px;
+            height: 250px;
+            min-width: 250px; 
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(232, 154, 190, 0.3);
+        }
+
+        /* --- Skills Section --- */
+        .skills-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .skills-list li {
+            background: var(--secondary-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .skills-list li:hover {
+            background: var(--primary-color);
+            color: var(--text-light);
+            transform: translateY(-3px);
+        }
+
+        /* --- Projects Section --- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .project-card {
+            background: var(--text-light);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(232, 154, 190, 0.3);
+        }
+        .project-card img { width: 100%; height: 220px; object-fit: cover; }
+        .project-card h3 { font-size: 2rem; padding: 20px 20px 0 20px; }
+        .project-card p { padding: 0 20px; }
+        .btn-secondary {
+            display: inline-block;
+            margin: 0 20px 20px 20px;
+            padding: 8px 16px;
+            background: none;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover { background: var(--primary-color); color: var(--text-light); }
+
+        /* --- Contact Section & Animated Icons --- */
+        .contact-form {
+            max-width: 600px;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .contact-form input,
+        .contact-form textarea {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            padding: 12px;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            width: 100%;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(232, 154, 190, 0.5);
+        }
+        .btn-primary {
+            padding: 12px;
+            background: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover { background: #d98cb3; }
+        .social-links { text-align: center; margin-top: 40px; }
+        .social-links a {
+            display: inline-block;
+            margin: 0 15px;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .social-links a:hover { color: var(--accent-color); transform: scale(1.3) rotate(10deg); }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            margin-top: 40px;
+        }
+
+        /* ==================================================================
+        == RESPONSIVE MEDIA QUERIES
+        ==================================================================
+        */
+
+        /* --- Tablet & Medium Screens (<= 768px) --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 4rem; }
+            h2 { font-size: 2.8rem; }
+
+            /* --- Mobile Navigation --- */
+            .navbar-floating {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+                /* Reset desktop centering, keep the slide-down */
+                transform: translateY(-50px);
+            }
+            /* Scrolled state for mobile */
+            .navbar-floating.nav-scrolled {
+                transform: translateY(0);
+            }
+            
+            .navbar-container {
+                padding: 8px 20px;
+            }
+            .nav-links-desktop { display: none; }
+            .nav-icon { display: none; }
+            .nav-toggle { display: block; }
+
+            /* --- Mobile Layouts --- */
+            .hero { height: 90vh; }
+            .about-content { flex-direction: column; text-align: center; }
+            .section { padding: 60px 0; }
+        }
+
+        /* --- Small Phones (<= 480px) --- */
+        @media (max-width: 480px) {
+            .nav-brand { font-size: 1.6rem; }
+            h1 { font-size: 3.0rem; }
+            .hero-content p { font-size: 1.2rem; }
+            .project-grid { grid-template-columns: 1fr; }
+            .profile-pic { width: 200px; height: 200px; min-width: 200px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="blossom-canvas"></canvas>
+
+    <nav class="navbar-floating" id="navbar-floating">
+        <div class="navbar-container">
+            <a href="#" class="nav-brand">Bharti Chandel</a>
+            
+            <ul class="nav-links-desktop">
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <a href="#" class="nav-icon" aria-label="Toggle dark mode">
+                    <i data-feather="moon"></i>
+                </a>
+                <a href="#" class="nav-icon" aria-label="Search">
+                    <i data-feather="search"></i>
+                </a>
+                <button class="nav-toggle" aria-label="toggle navigation">
+                    <i data-feather="menu"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <ul class="nav-links-mobile" id="nav-links-mobile">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <header id="hero" class="hero">
+        <div class="hero-content">
+            <h1>Bharti Chandel</h1>
+            <p>Welcome to my creative portfolio</p>
+        </div>
+    </header>
+
+    <section id="about" class="container section">
+        <h2>About Me</h2>
+        <div class="about-content">
+            <img src="bharti.jpg" alt="Bharti Chandel" class="profile-pic">
+            <p>
+                Hello! I'm Bharti. 
+                Write a paragraph or two about your passion, your professional background, 
+                and what you love to do. Talk about your journey and what drives you.
+            </p>
+        </div>
+    </section>
+
+    <section id="projects" class="container section">
+        <h2>My Projects</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <img src="https://via.placeholder.com/400x300" alt="Project 1">
+                <h3>Project Title 1</h3>
+                <p>A brief description of the project, the technology used, and what you learned.</p>
+                <a href="#" class="btn-secondary">View Project</a>
+            </div>
+            <div class="project-card">
+                <img src="https://via.placeholder.com/400x300" alt="Project 2">
+                <h3>Project Title 2</h3>
+                <p>A brief description of the project, the technology used, and what you learned.</p>
+                <a href="#" class="btn-secondary">View Project</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="container section">
+        <h2>My Skills</h2>
+        <ul class="skills-list">
+            <li>HTML5</li>
+            <li>CSS3 & Sass</li>
+            <li>JavaScript (ES6+)</li>
+            <li>React</li>
+            <li>UI/UX Design</li>
+        </ul>
+    </section>
+
+    <section id="contact" class="container section">
+        <h2>Get In Touch</h2>
+        <p>I'm always open to discussing new projects or creative ideas. Feel free to reach out!</p>
+        <form class="contact-form">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit" class="btn-primary">Send Message</button>
+        </form>
+        <div class="social-links">
+            <a href="#" aria-label="LinkedIn Profile"><i data-feather="linkedin"></i></a>
+            <a href="#" aria-label="GitHub Profile"><i data-feather="github"></i></a>
+            <a href="#" aria-label="Instagram Profile"><i data-feather="instagram"></i></a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2025 Bharti Chandel. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Activate Feather SVG Icons ---
+            feather.replace();
+
+            // --- 2. Falling Blossom Effect ---
+            const canvas = document.getElementById('blossom-canvas');
+            const ctx = canvas.getContext('2d');
+            let canvasWidth = window.innerWidth;
+            let canvasHeight = window.innerHeight;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            let blossoms = [];
+            const blossomEmoji = '🌸'; 
+
+            window.addEventListener('resize', () => {
+                canvasWidth = window.innerWidth;
+                canvasHeight = window.innerHeight;
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+            });
+
+            function Blossom() {
+                this.x = Math.random() * canvasWidth;
+                this.y = (Math.random() * canvasHeight) - canvasHeight;
+                this.size = (Math.random() * 10) + 15;
+                this.speed = (Math.random() * 2) + 1;
+                this.opacity = (Math.random() * 0.5) + 0.3;
+                this.sway = Math.random() * 0.5 - 0.25;
+            }
+
+            Blossom.prototype.draw = function() {
+                ctx.globalAlpha = this.opacity;
+                ctx.font = this.size + 'px serif';
+                ctx.fillText(blossomEmoji, this.x, this.y);
+            };
+
+            Blossom.prototype.update = function() {
+                this.y += this.speed;
+                this.x += this.sway;
+                if (this.y > canvasHeight + this.size) {
+                    this.y = -this.size;
+                    this.x = Math.random() * canvasWidth;
+                }
+            };
+
+            function createBlossoms() {
+                const blossomCount = window.innerWidth < 768 ? 25 : 50;
+                for (let i = 0; i < blossomCount; i++) {
+                    blossoms.push(new Blossom());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                blossoms.forEach(blossom => {
+                    blossom.update();
+                    blossom.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            createBlossoms();
+            animate();
+            
+            // --- 3. Mobile Navigation Toggle ---
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinksMobile = document.getElementById('nav-links-mobile');
+
+            navToggle.addEventListener('click', () => {
+                navLinksMobile.classList.toggle('nav-active');
+
+                if (navLinksMobile.classList.contains('nav-active')) {
+                    navToggle.innerHTML = '<i data-feather="x"></i>';
+                } else {
+                    navToggle.innerHTML = '<i data-feather="menu"></i>';
+                }
+                feather.replace();
+            });
+
+            document.querySelectorAll('.nav-links-mobile a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navLinksMobile.classList.contains('nav-active')) {
+                        navLinksMobile.classList.remove('nav-active');
+                        navToggle.innerHTML = '<i data-feather="menu"></i>';
+                        feather.replace();
+                    }
+                });
+            });
+
+            // --- 4. NEW: Navbar Scroll Effect ---
+            // This is the logic that makes the header appear on scroll
+            const navbar = document.getElementById('navbar-floating');
+            
+            window.addEventListener('scroll', () => {
+                // We add 'nav-scrolled' if user scrolls 50px down,
+                // and remove it if they are back at the top.
+                if (window.scrollY > 50) {
+                    navbar.classList.add('nav-scrolled');
+                } else {
+                    navbar.classList.remove('nav-scrolled');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
